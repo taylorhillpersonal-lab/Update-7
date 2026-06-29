@@ -120,7 +120,7 @@ export default function UsernameGate() {
               <View style={styles.iconWrap}>
                 <MaterialCommunityIcons name="crown" size={40} color={colors.brandPrimary} />
               </View>
-              <Text style={styles.title}>Tycoon Empire</Text>
+              <Text style={styles.title}>Idle Business Tycoon</Text>
               <Text style={styles.subtitle}>
                 {hubConnected
                   ? "Sign in to save your empire across devices — or play locally via Gaming Hub."

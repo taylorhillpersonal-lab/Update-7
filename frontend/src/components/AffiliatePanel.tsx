@@ -95,7 +95,7 @@ export default function AffiliatePanel() {
     const url = buildShareUrl();
     try {
       await Share.share({
-        message: `Join me on Tycoon Empire! Use my invite code ${me.code} for 25 gems + $10k starter cash. ${url}`,
+        message: `Join me on Idle Business Tycoon! Use my invite code ${me.code} for 25 gems + $10k starter cash. ${url}`,
       });
     } catch {
       // User dismissed.

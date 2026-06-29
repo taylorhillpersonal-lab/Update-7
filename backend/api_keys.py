@@ -1,6 +1,6 @@
 """
 ================================================================================
- Tycoon Empire — SINGLE SOURCE OF TRUTH FOR ALL API KEYS / DB / SECRETS
+ Idle Business Tycoon — SINGLE SOURCE OF TRUTH FOR ALL API KEYS / DB / SECRETS
 ================================================================================
 
 This file is the ONLY place you edit when rotating credentials, plugging in real
@@ -71,7 +71,7 @@ EMAIL_JWT_SECRET: str = "68zWavI47P4ALuIfv-b64xBwM5ubSVTqz3exzfueXzgU_3WTWT5xjAn
 # GOOGLE_PAY_ENV="PRODUCTION" and use the Merchant ID from the Wallet Console.
 GOOGLE_PAY_ENV: str = "TEST"                       # "TEST" | "PRODUCTION"
 GOOGLE_PAY_MERCHANT_ID: str = "TEST_MERCHANT_ID"
-GOOGLE_PAY_MERCHANT_NAME: str = "Tycoon Empire (TEST)"
+GOOGLE_PAY_MERCHANT_NAME: str = "Idle Business Tycoon (TEST)"
 
 # ------------------------------------------------------------------------------
 # 5. GOOGLE PLAY BILLING (Android native in-app purchases)

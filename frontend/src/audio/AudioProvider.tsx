@@ -1,5 +1,5 @@
 /**
- * Tycoon Empire — Audio system
+ * Idle Business Tycoon — Audio system
  *
  * - Background music: copyright-free upbeat loop streamed from Pixabay CDN
  *   (Pixabay content license allows commercial reuse without attribution).

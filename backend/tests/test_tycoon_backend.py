@@ -1,4 +1,4 @@
-"""Backend regression tests for Tycoon Empire.
+"""Backend regression tests for Idle Business Tycoon.
 
 Covers:
 - Health / root endpoint
@@ -41,7 +41,7 @@ def s():
 def test_root(s):
     r = s.get(f"{API}/")
     assert r.status_code == 200, r.text
-    assert r.json().get("message") == "Tycoon Empire API"
+    assert r.json().get("message") == "Idle Business Tycoon API"
 
 
 # ----- Email auth -----

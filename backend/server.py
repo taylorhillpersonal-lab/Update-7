@@ -123,7 +123,7 @@ def _entry(doc: Dict[str, Any], rank: int) -> "LeaderboardEntry":
 # ---------- Routes ----------
 @api_router.get("/")
 async def root():
-    return {"message": "Tycoon Empire API"}
+    return {"message": "Idle Business Tycoon API"}
 
 
 @api_router.post("/sync", response_model=Profile)
@@ -509,7 +509,7 @@ async def _reconcile_vacated_cities(device_id: str, keep: Optional[str]):
 # strings (no third-party processor in the middle).
 GPAY_ENV = os.environ.get("GOOGLE_PAY_ENV", "TEST").upper()
 GPAY_MERCHANT_ID = os.environ.get("GOOGLE_PAY_MERCHANT_ID", "TEST_MERCHANT_ID")
-GPAY_MERCHANT_NAME = os.environ.get("GOOGLE_PAY_MERCHANT_NAME", "Tycoon Empire (TEST)")
+GPAY_MERCHANT_NAME = os.environ.get("GOOGLE_PAY_MERCHANT_NAME", "Idle Business Tycoon (TEST)")
 
 # Prices defined strictly server-side. Never trust client amounts.
 # Unified store catalog — every item that costs real money lives here.
@@ -2265,7 +2265,7 @@ async def report_player(req: ReportPlayerRequest):
         err = "Email service not configured."
     else:
         payload: Dict[str, Any] = {
-            "from": f"Tycoon Empire Reports <{RESEND_FROM_EMAIL}>",
+            "from": f"Idle Business Tycoon Reports <{RESEND_FROM_EMAIL}>",
             "to": [SUPPORT_EMAIL],
             "subject": f"[Player Report] {reported_name} reported by {reporter_name}",
             "html": html,
@@ -2311,7 +2311,7 @@ async def _send_support_email(subject: str, html: str) -> tuple[bool, Optional[s
                 "https://api.resend.com/emails",
                 headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
                 json={
-                    "from": f"Tycoon Empire <{RESEND_FROM_EMAIL}>",
+                    "from": f"Idle Business Tycoon <{RESEND_FROM_EMAIL}>",
                     "to": [SUPPORT_EMAIL],
                     "subject": subject,
                     "html": html,
@@ -2360,7 +2360,7 @@ async def claim_grand_prize(req: GrandPrizeReq):
     sys_msg = {
         "id": uuidlib.uuid4().hex,
         "device_id": "SYSTEM",
-        "name": "🏆 Tycoon Empire",
+        "name": "🏆 Idle Business Tycoon",
         "text": announce_text,
         "created_at": now_iso(),
     }
