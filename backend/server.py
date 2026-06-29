@@ -1693,11 +1693,14 @@ async def ws_city_chat(ws: WebSocket):
                 pass
 
 
-# ---------- Auth (Google: bring-your-own) + Admin ----------
-# Set GOOGLE_AUTH_SESSION_API in backend/api_keys.py to your own OAuth gateway's
-# session-data endpoint. While empty, /auth/session returns 503 and the app's
-# Google button is hidden (email + password auth still works).
-GOOGLE_SESSION_API = os.environ.get("GOOGLE_AUTH_SESSION_API", "")
+# ---------- Auth (Google) + Admin ----------
+# Defaults to Emergent-managed Google Auth's session-data endpoint so sign-in
+# works out of the box. Override with your own gateway by setting
+# GOOGLE_AUTH_SESSION_API in backend/api_keys.py.
+GOOGLE_SESSION_API = (
+    os.environ.get("GOOGLE_AUTH_SESSION_API", "")
+    or "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data"
+)
 ADMIN_EMAIL = "taylorhillonline@gmail.com"
 
 

@@ -15,10 +15,11 @@ import { AuthUser, fetchMe, postEmailLogin, postEmailRegister, postLogout, postS
 
 const TOKEN_KEY = "tycoon_session_token";
 const DEVICE_KEY = "tycoon_device_id";
-// Bring your own Google sign-in: set GOOGLE_AUTH_BASE in backend/api_keys.py
-// (it flows to frontend/.env as EXPO_PUBLIC_GOOGLE_AUTH_BASE). While empty, the
-// "Continue with Google" button is hidden and no third-party auth page is used.
-const AUTH_BASE = process.env.EXPO_PUBLIC_GOOGLE_AUTH_BASE ?? "";
+// Google sign-in. Defaults to Emergent-managed Google Auth so the button works
+// out of the box. To use YOUR OWN hosted OAuth page instead, set
+// GOOGLE_AUTH_BASE in backend/api_keys.py (it flows to frontend/.env as
+// EXPO_PUBLIC_GOOGLE_AUTH_BASE) and GOOGLE_AUTH_SESSION_API on the backend.
+const AUTH_BASE = process.env.EXPO_PUBLIC_GOOGLE_AUTH_BASE || "https://auth.emergentagent.com/";
 const GOOGLE_AUTH_ENABLED = AUTH_BASE.length > 0;
 
 type AuthState = {

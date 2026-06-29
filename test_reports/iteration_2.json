@@ -1,0 +1,37 @@
+{
+  "summary": "Verified the Google-button restoration round. Backend pytest 5/5 passed: GET /api/ → 200; POST /api/auth/session with a dummy session_id now returns 400 (upstream verification failure) — NOT the previous 503 'not configured' (fix confirmed); email register + login + wrong-password rejection all work with the real-looking TLD tester+<ts>@tycoonempire.app / Tycoon!2026. Frontend (mobile 390x844): UsernameGate now renders BOTH 'Continue with Google' AND 'Continue with Email' buttons (login-menu + login-google-button + login-email-button all visible). Title is 'Idle Business Tycoon'. Tapping 'Continue with Google' on web correctly navigates to https://auth.emergentagent.com/?redirect=<app_origin>/ (full Google OAuth handshake intentionally NOT completed). End-to-end email signup → name picker (username-gate) → game (login-menu removed, tutorial appears) verified. Profile-tab Google button visibility confirmed via code review (AuthContext defaults googleAuthEnabled=true, profile.tsx no longer applies display:none).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "RN deprecated style props", "issue": "Console warnings: 'shadow*' and 'textShadow*' style props are deprecated (use boxShadow/textShadow); Image style.resizeMode is deprecated (use props.resizeMode). Reference: appears in multiple components — not gating any flow, but should be migrated."}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_auth_google_restore.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Cosmetic only) Migrate deprecated RN web style props: shadow*/textShadow* → boxShadow/textShadow, and Image style.resizeMode → resizeMode prop.",
+    "Update /app/memory/test_credentials.md: the note that /api/auth/session returns 503 by design is now stale — with the Emergent default, dummy session_ids return 400 (upstream rejection), not 503."
+  ],
+  "critical_code_review_comments": [
+    "AuthContext.tsx now defaults AUTH_BASE to https://auth.emergentagent.com/ when EXPO_PUBLIC_GOOGLE_AUTH_BASE is empty — googleAuthEnabled is therefore always true unless the env var is explicitly set to an empty override (cannot be done since '||' short-circuits on empty string). This matches the requested fix.",
+    "server.py GOOGLE_SESSION_API now defaults to https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data — endpoint no longer gated as 503.",
+    "profile.tsx still conditionally hides the Google button via `!googleAuthEnabled && { display: 'none' }` — fine, but since the default is now always on it's effectively dead code; consider simplifying."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_auth_google_restore.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "Each pytest run creates a unique email tester+<unix_ts>@tycoonempire.app in db.email_users; UI test also creates one such user via /api/auth/email/register. No cleanup performed (test users are isolated by timestamp).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Google-button restoration verified on both UsernameGate and (via code) Profile tab. Do NOT attempt to complete the real Google OAuth handshake in automation — only assert the click redirects to auth.emergentagent.com. Email auth uses /api/auth/email/register and /api/auth/email/login; pydantic EmailStr rejects .test TLD so use @tycoonempire.app. The 'No androidAppId' warnings in expo logs are expected/harmless on web.",
+  "rca_of_issue": "Before fix: AUTH_BASE was bound to process.env.EXPO_PUBLIC_GOOGLE_AUTH_BASE (empty string) → GOOGLE_AUTH_ENABLED false → Google buttons hidden everywhere. Backend GOOGLE_SESSION_API was also empty → /api/auth/session returned 503. Fix: both now default to the Emergent-managed endpoints when env vars are empty, restoring the Google option without changing email auth."
+}
