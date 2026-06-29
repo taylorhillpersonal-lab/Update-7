@@ -1,0 +1,43 @@
+{
+  "summary": "Backend + frontend tested. Core bug FIXED: the app now renders on the preview — UsernameGate (Tycoon Empire, Continue with Email) loads correctly at the public URL. Google sign-in is correctly hidden everywhere (no 'Continue with Google' button on the gate or the Profile screen). Email register + login E2E works (POST /api/auth/email/register → 200, POST /api/sync → 200, then onboarding 'Name your Tycoon' → 'Welcome, Tycoon' tour reached). Backend GET /api/ returns the expected {message:'Tycoon Empire API'}. /api/auth/session returns 503 'Google sign-in is not configured' as designed, with NO outbound call to emergentagent.com. Pytest: 6/9 PASS — the 3 failures are NOT functionality bugs; they are caused by the documented test email 'tester@tycoon.test' being rejected by Pydantic EmailStr (the .test TLD is reserved). Auth itself works perfectly with any real-looking email (verified end-to-end via UI and direct curl). Two residual branding items found: (a) Emergent's default 'e' app icon (icon.png / adaptive-icon.png / favicon.png / splash-image.png) is still bundled and is visible on the in-app tutorial card; (b) two screens still import 'expo-av' (Audio.Sound) which is the deprecated audio module.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/auth/email/register & /login", "issue": "Pydantic EmailStr rejects the documented test credential 'tester@tycoon.test' with HTTP 422 because '.test' is a reserved TLD. Either (1) update /app/memory/test_credentials.md to a real-looking email like tester@tycoonempire.app, or (2) relax the email validator. The auth flow itself is working fine."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Onboarding tutorial card / app icon", "issues": ["Default Emergent app icon (blue square with 'e' mark) is still used as icon.png, adaptive-icon.png, favicon.png and splash-image.png in /app/frontend/assets/images/. This 'e' logo is visible on the very first tutorial card ('Welcome, Tycoon') after signup and contradicts the 'remove ALL Emergent branding' requirement. Replace these four PNGs with the Tycoon Empire artwork."]}
+    ],
+    "react_native_issues": [
+      {"component": "expo-av (deprecated)", "issue": "expo-av is deprecated; project should migrate audio to expo-audio. Found in package.json and imported by /app/frontend/src/audio/* and /app/frontend/app/wordle.tsx (Audio.Sound). Confirm with: grep -rn 'expo-av' /app/frontend/src /app/frontend/app"}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tycoon_backend.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Update /app/memory/test_credentials.md to use a non-reserved TLD (e.g. tester@tycoonempire.app) so the documented credential actually validates — OR relax the EmailStr validator if .test addresses must keep working. Auth itself is fine.",
+    "Replace the Emergent default 'e' icon in /app/frontend/assets/images/ (icon.png, adaptive-icon.png, favicon.png, splash-image.png) with Tycoon Empire artwork — it currently shows on the tutorial card and any browser tab.",
+    "Migrate audio playback from deprecated 'expo-av' to 'expo-audio' (Audio.Sound usages in src/audio and app/wordle.tsx).",
+    "AdMob 'No androidAppId/iosAppId provided' warnings in expo logs are EXPECTED (config-eval only, harmless on web) — no action needed unless shipping a native build."
+  ],
+  "critical_code_review_comments": [
+    "backend/server.py is ~1700+ lines — consider splitting routes into modules (cities, payments, admin, chat) for maintainability. Functionally fine.",
+    "Frontend correctly gates Google login behind EXPO_PUBLIC_GOOGLE_AUTH_BASE — both UsernameGate.tsx (conditional render) and profile.tsx (display:'none') hide the button when empty. Good.",
+    "Backend /auth/session 503s early when GOOGLE_AUTH_SESSION_API is empty without making any outbound HTTP request — verified."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_tycoon_backend.py (new)"
+  ],
+  "success_rate": {"backend": "67% (6/9 pytest — 3 'fails' are credential-format, not code bugs; functionally 100%)", "frontend": "100% (gate renders, no Google button, email signup → onboarding works)"},
+  "seed_data_creation": "Test users created via /api/auth/email/register with throwaway addresses (e2e_<timestamp>@example.com). The canonical tester@tycoon.test could NOT be created because the email validator rejects the .test TLD.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Public URL = https://game-app-install.preview.emergentagent.com. Use real-TLD test emails (not .test) until either credentials doc or validator is updated. UsernameGate testIDs: email-signup-name, email-input, email-password, email-referral; submit is the text 'Create account' (second match). Onboarding next screen testID: username-gate-input + 'Start Building' text button.",
+  "rca_of_issue": "Reported preview bug ('app isn't showing up') is fully resolved — the app was simply empty before the GitHub import; with the code now in /app, the supervisor-managed Expo server bundles successfully and serves the UsernameGate at the public URL. Google-auth removal is correctly wired (EXPO_PUBLIC_GOOGLE_AUTH_BASE is empty → googleAuthEnabled=false → button hidden in both UsernameGate.tsx and profile.tsx; backend /auth/session early-returns 503 without touching emergentagent.com). Remaining branding work is purely the bundled default 'e' app-icon PNGs."
+}

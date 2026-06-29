@@ -12,9 +12,10 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.tycoonempire.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#000"
       },
       "edgeToEdgeEnabled": true
     },
@@ -31,9 +32,17 @@
           "image": "./assets/images/splash-image.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000000"
+          "backgroundColor": "#000"
         }
-      ]
+      ],
+      "expo-font",
+      [
+        "react-native-google-mobile-ads",
+        {}
+      ],
+      "expo-audio",
+      "expo-asset",
+      "expo-iap"
     ],
     "experiments": {
       "typedRoutes": true
