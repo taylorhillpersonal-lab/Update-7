@@ -537,7 +537,7 @@ systemctl reload nginx
 
 # Final HTTPS probe.
 HTTPS_HEALTH=$(curl -fsS --max-time 10 "https://${DOMAIN}/api/" || true)
-if [[ "$HTTPS_HEALTH" == *"Tycoon Empire API"* ]]; then
+if [[ "$HTTPS_HEALTH" == *"Idle Business Tycoon API"* ]]; then
   ok "HTTPS reachable: https://${DOMAIN}/api/ -> $HTTPS_HEALTH"
 else
   warn "HTTPS probe didn't return the expected body. Last response: $HTTPS_HEALTH"
@@ -547,7 +547,7 @@ fi
 step "All done"
 cat <<EOF
 
-  Tycoon Empire backend is live!
+  Idle Business Tycoon backend is live!
 
     Backend health     curl https://${DOMAIN}/api/
     Logs               journalctl -u tycoon-backend -f
