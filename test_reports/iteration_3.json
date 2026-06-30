@@ -1,0 +1,35 @@
+{
+  "summary": "Validated /app/install.sh against the originally-reported SyntaxError bug in the api_keys.py codegen. All 6 backend tests pass: install.sh exists & passes `bash -n`; the two here-docs (unquoted config + quoted PYEOF sync engine) render a Python file that py_compiles even with a hostile EMAIL_JWT_SECRET containing BOTH a backslash and a double-quote; the escape line `sv.replace(\"\\\\\", \"\\\\\\\\\").replace('\\\"', '\\\\\"')` is preserved verbatim in the rendered file (this was the originally-mangled line); sync_all() writes ONLY backend/.env and frontend/.env (verified app.json + adConfig.ts sentinels are untouched); frontend/.env contains all required EXPO_PUBLIC_ADMOB_* keys plus EXPO_PUBLIC_ANDROID_PACKAGE; and round-tripping the hostile secret through the dotenv writer preserves it byte-for-byte. Live backend smoke (GET {EXPO_PUBLIC_BACKEND_URL}/api/) returns 200.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_install_codegen.py",
+    "/app/test_reports/pytest/install_codegen.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "install.sh correctly uses two here-docs: unquoted <<EOF for config (expands $(py_quote ...)) and quoted <<'PYEOF' for the static sync engine (preserves backslashes). This is the documented fix for the original SyntaxError.",
+    "py_quote() uses json.dumps to safely produce Python string literals for any input — robust against backslashes, double-quotes, unicode, etc.",
+    "sync_all() touches only the two git-ignored .env files; no tracked source (app.json, adConfig.ts) is rewritten — matches the design intent of api_keys.py being the single source of truth."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_install_codegen.py (new — pytest suite that extracts the install.sh here-docs and runs them in a temp dir with hostile inputs)"
+  ],
+  "success_rate": {
+    "backend": "100% (6/6 pytest cases)",
+    "frontend": "not tested (testing_type=backend)"
+  },
+  "seed_data_creation": "None. The pytest fixture renders api_keys.py into a per-test tmp_path; no production data is touched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Re-run with: pytest /app/backend/tests/test_install_codegen.py -v. The suite is hermetic — it extracts the api_keys.py-generation here-docs from /app/install.sh, runs them under bash in a tmp dir with a hostile EMAIL_JWT_SECRET (backslash + double-quote), then imports the result and exercises sync_all(). If install.sh is ever refactored, the regex anchors `cat > \"$API_KEYS_FILE\" <<EOF` and `cat >> \"$API_KEYS_FILE\" <<'PYEOF'` must remain or the extraction needs updating.",
+  "rca_of_issue": "Original bug: install.sh wrote api_keys.py via a single UNQUOTED here-doc (<<EOF). Bash inside an unquoted here-doc collapses `\\\\` to `\\`, so the Python source line `sv.replace(\"\\\\\", \"\\\\\\\\\")` became `sv.replace(\"\\\", \"\\\\\")` after generation — a literal `\\\"` inside the Python string, which Python parses as an unterminated escape, raising `SyntaxError: unexpected character after line continuation character` at the offending line (~82). Fix verified: the static sync engine is now written through a QUOTED here-doc (<<'PYEOF') where bash does ZERO expansion or escape processing, so backslashes survive verbatim. The config block remains unquoted, but py_quote() (json.dumps via python3) produces strings that don't rely on bash to preserve their escapes."
+}
